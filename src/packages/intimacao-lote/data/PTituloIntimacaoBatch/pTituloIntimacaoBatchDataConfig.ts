@@ -1,5 +1,5 @@
 export const PTITULOINTIMACAOBATCH_FAKE_ENDPOINTS = {
-  index: "intimacao-batch/p_titulo_intimacao_batch/",
+  index: "intimacao-lote/p_titulo_intimacao_lote/",
 };
 
 export function usePTituloIntimacaoBatchMockData() {

@@ -2,17 +2,13 @@ import db from "@/db.json";
 import type { PEspecieInterface } from "@/packages/administrativo/interfaces/PEspecie/PEspecieInterface";
 import type { POcorrenciasInterface } from "@/packages/administrativo/interfaces/POcorrencias/POcorrenciasInterface";
 import type { PPessoaInterface } from "@/packages/administrativo/interfaces/PPessoa/PPessoaInterface";
-import type { PPessoaVinculoInterface } from "@/packages/administrativo/interfaces/PPessoaVinculo/PPessoaVinculoInterface";
 import type { PTituloInterface } from "@/packages/administrativo/interfaces/PTitulo/PTituloInterface";
 import type { TituloListItem } from "@/packages/administrativo/interfaces/PTitulo/PTituloListItem";
+import { pPessoaVinculoListRef } from "@/packages/administrativo/data/PTitulo/ptituloPessoasVinculoInMemory";
 
 const especies: PEspecieInterface[] = [...(db.especies as unknown as PEspecieInterface[])];
 const ocorrencias: POcorrenciasInterface[] = [...(db.ocorrencias as unknown as POcorrenciasInterface[])];
 const pessoas: PPessoaInterface[] = [...(db.pessoas as unknown as PPessoaInterface[])];
-const pessoasVinculo: PPessoaVinculoInterface[] = [
-  ...(db.pessoas_vinculo as unknown as PPessoaVinculoInterface[]),
-];
-
 function resolveStatus(titulo: PTituloInterface): string {
   if (titulo.situacao_aceite) return titulo.situacao_aceite;
   const ocorrencia = ocorrencias.find((o) => o.ocorrencias_id === titulo.ocorrencia_id);
@@ -32,7 +28,7 @@ export function mapStatusToOcorrencia(status: string): number | undefined {
 export function enrichTitulo(titulo: PTituloInterface): TituloListItem {
   const especie = especies.find((e) => e.especie_id === titulo.especie_id);
 
-  const vinculosDoTitulo = pessoasVinculo.filter((v) => v.titulo_id === titulo.titulo_id);
+  const vinculosDoTitulo = pPessoaVinculoListRef.current.filter((v) => v.titulo_id === titulo.titulo_id);
   const tipoDescricaoMap: Record<string, string> = {
     A: "Apresentante",
     D: "Devedor",
@@ -50,6 +46,9 @@ export function enrichTitulo(titulo: PTituloInterface): TituloListItem {
     return {
       tipo,
       descricao: tipoDescricaoMap[tipo] ?? "Outro Vínculo",
+      pessoa_vinculo_id: v.pessoa_vinculo_id,
+      devedor_tipo_aceite: v.devedor_tipo_aceite,
+      devedor_data_aceite: v.devedor_data_aceite,
       nome: v.nome ?? pessoa?.nome,
       cpfcnpj: v.cpfcnpj ?? pessoa?.cpfcnpj,
     };

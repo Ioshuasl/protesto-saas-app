@@ -36,11 +36,11 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import PPessoaTableFormDialog from "@/packages/administrativo/components/PPessoa/PPessoaTableFormDialog";
-import { usePTituloReadHook } from "@/packages/administrativo/hooks/PTitulo/usePTituloReadHook";
 import type { PPessoaInterface } from "@/packages/administrativo/interfaces/PPessoa/PPessoaInterface";
 import type { GUsuarioInterface } from "@/packages/administrativo/interfaces/GUsuario/GUsuarioInterface";
-import type { TituloListItem } from "@/packages/administrativo/interfaces/PTitulo/PTituloListItem";
 import type { PCertidaoFormValues } from "@/packages/certidao/components/PCertidao/PCertidaoFormValues";
+import { usePCertidaoConsultaApresentanteHook } from "@/packages/certidao/hooks/PCertidao/usePCertidaoConsultaApresentanteHook";
+import { isPCertidaoConsultaApresentanteResult } from "@/packages/certidao/interface/PCertidao/PCertidaoConsultaApresentanteInterface";
 import { DateRangePicker } from "@/shared/components/dateRangePicker/DateRangePicker";
 
 export function PCertidaoEmissaoDialogTitleRow({ onOpenTipoInfo }: { onOpenTipoInfo: () => void }) {
@@ -98,82 +98,6 @@ function normalizeDigits(value?: string): string {
   return (value ?? "").replace(/\D/g, "");
 }
 
-function normalizeName(value: string): string {
-  return value.trim().toLowerCase().replace(/\s+/g, " ");
-}
-
-function namesMatch(a?: string, b?: string): boolean {
-  if (!a?.trim() || !b?.trim()) return false;
-  return normalizeName(a) === normalizeName(b);
-}
-
-function docsMatch(docA?: string, docB?: string): boolean {
-  const da = normalizeDigits(docA);
-  const db = normalizeDigits(docB);
-  return Boolean(da.length && db.length && da === db);
-}
-
-function getDateOnly(date: Date): Date {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-}
-
-function getTituloReferenceDate(t: TituloListItem): Date | null {
-  const raw = t.data_protesto ?? t.data_intimacao ?? t.data_apontamento;
-  if (!raw) return null;
-  const d = new Date(raw as string | Date);
-  return Number.isNaN(d.getTime()) ? null : d;
-}
-
-function isInSearchPeriod(ref: Date | null, range: DateRange | undefined): boolean {
-  if (!ref || !range?.from) return false;
-  const from = getDateOnly(range.from);
-  const to = range.to ? getDateOnly(range.to) : getDateOnly(range.from);
-  const d = getDateOnly(ref);
-  return d >= from && d <= to;
-}
-
-/** Protestos ativos: exclui pagos, liquidados, cancelados e desistências (Art. 299). */
-function isProtestoAtivoParaCertidao(status?: string): boolean {
-  const s = (status ?? "").toLowerCase();
-  if (!s.trim()) return false;
-  if (/pago|liquidad|cancelad|desist|pendente/.test(s)) return false;
-  return true;
-}
-
-interface CertidaoEmissaoAnalise {
-  titulosPorDocumento: TituloListItem[];
-  candidatosHomonimia: TituloListItem[];
-}
-
-function analisarTitulosParaCertidao(
-  titulos: TituloListItem[],
-  params: {
-    nomeRequerente: string;
-    docRequerente: string;
-    periodo: DateRange | undefined;
-  },
-): CertidaoEmissaoAnalise {
-  const { nomeRequerente, docRequerente, periodo } = params;
-
-  const base = titulos.filter((t) => {
-    const ref = getTituloReferenceDate(t);
-    if (!isInSearchPeriod(ref, periodo)) return false;
-    return isProtestoAtivoParaCertidao(t.status_descricao);
-  });
-
-  const titulosPorDocumento = base.filter((t) => docsMatch(t.devedor_cpfcnpj, docRequerente));
-
-  const docMatchIds = new Set(titulosPorDocumento.map((t) => t.titulo_id));
-  const candidatosHomonimia = base.filter(
-    (t) =>
-      !docMatchIds.has(t.titulo_id) &&
-      namesMatch(t.devedor_nome, nomeRequerente) &&
-      !docsMatch(t.devedor_cpfcnpj, docRequerente),
-  );
-
-  return { titulosPorDocumento, candidatosHomonimia };
-}
-
 function formatMoney(value?: number): string {
   if (value === undefined || Number.isNaN(value)) return "—";
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
@@ -194,13 +118,13 @@ export function PCertidaoEmissaoForm({
   onCancel,
   isSaving,
 }: PCertidaoEmissaoFormProps) {
-  const { titulos, isLoading: isLoadingTitulos, fetchTitulos } = usePTituloReadHook();
+  const { analise, isLoading: isLoadingConsulta, consultarApresentante, resetConsulta } =
+    usePCertidaoConsultaApresentanteHook();
 
   const [apresentante, setApresentante] = useState("");
   const [cpfcnpj, setCpfcnpj] = useState("");
   const [dateRange, setDateRange] = useState<DateRange | undefined>(() => getDefaultFiveYearRange());
   const [consultationDone, setConsultationDone] = useState(false);
-  const [isConsulting, setIsConsulting] = useState(false);
   const [homonimiaConfirmada, setHomonimiaConfirmada] = useState(false);
   const [isPPessoaDialogOpen, setIsPPessoaDialogOpen] = useState(false);
 
@@ -213,7 +137,8 @@ export function PCertidaoEmissaoForm({
   const invalidateConsultation = useCallback(() => {
     setConsultationDone(false);
     setHomonimiaConfirmada(false);
-  }, []);
+    resetConsulta();
+  }, [resetConsulta]);
 
   useEffect(() => {
     if (!open) return;
@@ -222,22 +147,13 @@ export function PCertidaoEmissaoForm({
     setDateRange(getDefaultFiveYearRange());
     setConsultationDone(false);
     setHomonimiaConfirmada(false);
-    setIsConsulting(false);
+    resetConsulta();
     const fresh = getNowDateAndTime();
     setDataCertidao(fresh.date);
     setHoraCertidao(fresh.time);
     setUsuarioId("");
     setObservacao("");
   }, [open]);
-
-  const analise = useMemo(() => {
-    if (!consultationDone) return null;
-    return analisarTitulosParaCertidao(titulos, {
-      nomeRequerente: apresentante.trim(),
-      docRequerente: cpfcnpj.trim(),
-      periodo: dateRange,
-    });
-  }, [consultationDone, titulos, apresentante, cpfcnpj, dateRange]);
 
   const tipoDerivado: "P" | "N" | null = useMemo(() => {
     if (!analise) return null;
@@ -256,13 +172,13 @@ export function PCertidaoEmissaoForm({
   };
 
   const handleConsultar = async () => {
-    setIsConsulting(true);
-    try {
-      await fetchTitulos();
-      setConsultationDone(true);
-    } finally {
-      setIsConsulting(false);
-    }
+    const response = await consultarApresentante({
+      apresentante: apresentante.trim(),
+      cpfcnpj: cpfcnpj.trim(),
+      data_inicio: dateRange?.from ? format(dateRange.from, "yyyy-MM-dd") : undefined,
+      data_fim: dateRange?.to ? format(dateRange.to, "yyyy-MM-dd") : undefined,
+    });
+    setConsultationDone(isPCertidaoConsultaApresentanteResult(response));
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -298,7 +214,7 @@ export function PCertidaoEmissaoForm({
     });
   };
 
-  const busy = isConsulting || isLoadingTitulos;
+  const busy = isLoadingConsulta;
 
   const stepSummary = [
     { id: "296", label: "296", title: "Dados", dim: false },

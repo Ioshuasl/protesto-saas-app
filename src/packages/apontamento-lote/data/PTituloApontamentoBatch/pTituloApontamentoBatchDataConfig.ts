@@ -1,5 +1,5 @@
 export const PTITULOAPONTAMENTOBATCH_FAKE_ENDPOINTS = {
-  index: "apontamento-batch/p_titulo_apontamento_batch/",
+  index: "apontamento-lote/p_titulo_apontamento_lote/",
 };
 
 export function usePTituloApontamentoBatchMockData() {

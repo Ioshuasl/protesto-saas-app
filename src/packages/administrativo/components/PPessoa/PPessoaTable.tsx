@@ -51,7 +51,11 @@ export function PPessoaTable({ data, onEdit, onDelete, isLoading }: PPessoaTable
         </TableHeader>
         <TableBody>
           {data.map((pessoa) => (
-            <TableRow key={pessoa.pessoa_id}>
+            <TableRow
+              key={pessoa.pessoa_id}
+              className="cursor-pointer"
+              onClick={() => onEdit(pessoa)}
+            >
               <TableCell className="font-medium">{pessoa.pessoa_id}</TableCell>
               <TableCell>{pessoa.nome}</TableCell>
               <TableCell>{pessoa.cpfcnpj}</TableCell>
@@ -64,7 +68,10 @@ export function PPessoaTable({ data, onEdit, onDelete, isLoading }: PPessoaTable
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => onEdit(pessoa)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onEdit(pessoa);
+                    }}
                     title="Editar"
                     className="group"
                   >
@@ -73,7 +80,10 @@ export function PPessoaTable({ data, onEdit, onDelete, isLoading }: PPessoaTable
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => onDelete(pessoa.pessoa_id)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onDelete(pessoa.pessoa_id);
+                    }}
                     title="Excluir"
                     className="group"
                   >

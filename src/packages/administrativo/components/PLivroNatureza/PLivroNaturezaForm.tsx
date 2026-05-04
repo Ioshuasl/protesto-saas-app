@@ -6,7 +6,7 @@ import { PLivroNaturezaInterface } from "@/packages/administrativo/interfaces";
 import {
   livroNaturezaFormSchema,
   type LivroNaturezaFormValues,
-} from "@/packages/administrativo/schemas/PLivroNatureza/PPLivroNaturezaFormSchema";
+} from "@/packages/administrativo/schemas/PLivroNatureza/PLivroNaturezaFormSchema";
 import { Button } from "@/components/ui/button";
 import {
   Form,

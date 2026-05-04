@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { LivroNaturezaFormValues } from '@/packages/administrativo/schemas/PLivroNatureza/PPLivroNaturezaFormSchema';
+import { LivroNaturezaFormValues } from '@/packages/administrativo/schemas/PLivroNatureza/PLivroNaturezaFormSchema';
 import { PLivroNaturezaInterface } from '@/packages/administrativo/interfaces/PLivroNatureza/PLivroNaturezaInterface';
 import { PLivroNaturezaSaveCreateService } from '@/packages/administrativo/services/PLivroNatureza/PLivroNaturezaSaveCreateService';
 import { PLivroNaturezaSaveUpdateService } from '@/packages/administrativo/services/PLivroNatureza/PLivroNaturezaSaveUpdateService';

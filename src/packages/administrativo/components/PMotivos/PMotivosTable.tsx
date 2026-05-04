@@ -50,20 +50,27 @@ export function PMotivosTable({ data, onEdit, onDelete, isLoading }: PMotivosTab
         </TableHeader>
         <TableBody>
           {data.map((motivo) => (
-            <TableRow key={motivo.motivos_id}>
+            <TableRow
+              key={motivo.motivos_id}
+              className="cursor-pointer"
+              onClick={() => onEdit(motivo)}
+            >
               <TableCell className="font-medium">{motivo.motivos_id}</TableCell>
               <TableCell>{motivo.codigo}</TableCell>
               <TableCell>{motivo.descricao}</TableCell>
               <TableCell>{motivo.situacao}</TableCell>
               <TableCell className="text-right">
                 <div className="flex justify-end gap-2">
-                  <Button variant="ghost" size="icon" onClick={() => onEdit(motivo)} title="Editar" className="group">
+                  <Button variant="ghost" size="icon" onClick={(event) => { event.stopPropagation(); onEdit(motivo); }} title="Editar" className="group">
                     <Pencil className="h-4 w-4 text-foreground transition-colors group-hover:text-[#FF6B00]" strokeWidth={1.5} />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => onDelete(motivo.motivos_id)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onDelete(motivo.motivos_id);
+                    }}
                     title="Excluir"
                     className="group"
                   >

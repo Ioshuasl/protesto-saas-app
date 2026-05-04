@@ -50,11 +50,6 @@ export function POcorrenciasSelectObject({
     return ocorrencias.map((o) => ({ value: String(o.ocorrencias_id), label: ocorrenciaLabel(o) }));
   }, [optionsOverride, ocorrencias]);
 
-  const selectedLabel = useMemo(
-    () => options.find((o) => o.value === (value ?? ""))?.label,
-    [options, value],
-  );
-
   return (
     <Select
       value={value && value.length > 0 ? value : undefined}
@@ -62,9 +57,7 @@ export function POcorrenciasSelectObject({
       disabled={disabled || (isLoading && !(optionsOverride && optionsOverride.length > 0))}
     >
       <SelectTrigger className={cn("w-full", triggerClassName, className)}>
-        <SelectValue placeholder={isLoading && options.length === 0 ? "Carregando..." : placeholder}>
-          {selectedLabel}
-        </SelectValue>
+        <SelectValue placeholder={isLoading && options.length === 0 ? "Carregando..." : placeholder} />
       </SelectTrigger>
       <SelectContent>
         {isLoading && options.length === 0 ? (

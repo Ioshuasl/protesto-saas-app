@@ -1,5 +1,5 @@
 export const PTITULOPROTESTARBATCH_FAKE_ENDPOINTS = {
-  index: "protesto-batch/p_titulo_protestar_batch/",
+  index: "protesto-lote/p_titulo_protestar_lote/",
 };
 
 export function usePTituloProtestarBatchMockData() {

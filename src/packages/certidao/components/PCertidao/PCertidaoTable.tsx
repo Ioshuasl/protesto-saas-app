@@ -139,7 +139,11 @@ export function PCertidaoTable({
         </TableHeader>
         <TableBody>
           {data.map((certidao) => (
-            <TableRow key={certidao.certidao_id} className="group transition-colors hover:bg-muted/30">
+            <TableRow
+              key={certidao.certidao_id}
+              className="group cursor-pointer transition-colors hover:bg-muted/30"
+              onClick={() => onEditarCertidao(certidao)}
+            >
               <TableCell>
                 <Badge variant="outline" className={getStatusClassName(certidao.status)}>
                   {getStatusLabel(certidao.status)}
@@ -181,7 +185,10 @@ export function PCertidaoTable({
                     variant="ghost"
                     size="icon"
                     className="transition-colors hover:bg-orange-50 hover:text-orange-600"
-                    onClick={() => onEditarCertidao(certidao)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onEditarCertidao(certidao);
+                    }}
                     aria-label="Editar certidão"
                     title="Editar certidão"
                   >
@@ -192,7 +199,10 @@ export function PCertidaoTable({
                     variant="ghost"
                     size="icon"
                     className="transition-transform hover:-translate-y-0.5 hover:bg-rose-50"
-                    onClick={() => onCancelarCertidao(certidao)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onCancelarCertidao(certidao);
+                    }}
                     aria-label="Cancelar certidão"
                     title="Cancelar certidão"
                   >

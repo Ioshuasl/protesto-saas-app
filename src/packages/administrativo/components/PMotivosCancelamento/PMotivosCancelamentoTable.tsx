@@ -55,20 +55,27 @@ export function PMotivosCancelamentoTable({
         </TableHeader>
         <TableBody>
           {data.map((item) => (
-            <TableRow key={item.motivos_cancelamento_id}>
+            <TableRow
+              key={item.motivos_cancelamento_id}
+              className="cursor-pointer"
+              onClick={() => onEdit(item)}
+            >
               <TableCell className="font-medium">{item.motivos_cancelamento_id}</TableCell>
               <TableCell>{item.descricao}</TableCell>
               <TableCell>{item.situacao}</TableCell>
               <TableCell>{item.ord_jud_ou_rem_ind}</TableCell>
               <TableCell className="text-right">
                 <div className="flex justify-end gap-2">
-                  <Button variant="ghost" size="icon" onClick={() => onEdit(item)} title="Editar" className="group">
+                  <Button variant="ghost" size="icon" onClick={(event) => { event.stopPropagation(); onEdit(item); }} title="Editar" className="group">
                     <Pencil className="h-4 w-4 text-foreground transition-colors group-hover:text-[#FF6B00]" strokeWidth={1.5} />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => onDelete(item.motivos_cancelamento_id)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onDelete(item.motivos_cancelamento_id);
+                    }}
                     title="Excluir"
                     className="group"
                   >

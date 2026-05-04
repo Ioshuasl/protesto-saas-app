@@ -49,7 +49,11 @@ export function PEspecieTable({ data, onEdit, onDelete, isLoading }: PEspecieTab
         </TableHeader>
         <TableBody>
           {data.map((especie) => (
-            <TableRow key={especie.especie_id}>
+            <TableRow
+              key={especie.especie_id}
+              className="cursor-pointer"
+              onClick={() => onEdit(especie)}
+            >
               <TableCell className="font-medium">{especie.especie_id}</TableCell>
               <TableCell>{especie.especie}</TableCell>
               <TableCell>{especie.descricao}</TableCell>
@@ -58,7 +62,10 @@ export function PEspecieTable({ data, onEdit, onDelete, isLoading }: PEspecieTab
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => onEdit(especie)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onEdit(especie);
+                    }}
                     title="Editar"
                     className="group"
                   >
@@ -67,7 +74,10 @@ export function PEspecieTable({ data, onEdit, onDelete, isLoading }: PEspecieTab
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => onDelete(especie.especie_id)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onDelete(especie.especie_id);
+                    }}
                     title="Excluir"
                     className="group"
                   >

@@ -54,11 +54,6 @@ export function PMotivosSelectObject({
     return motivos.map((m) => ({ value: String(m.motivos_id), label: motivoLabel(m) }));
   }, [optionsOverride, motivos]);
 
-  const selectedLabel = useMemo(
-    () => options.find((o) => o.value === (value ?? ""))?.label,
-    [options, value],
-  );
-
   return (
     <Select
       value={value && value.length > 0 ? value : undefined}
@@ -66,9 +61,7 @@ export function PMotivosSelectObject({
       disabled={disabled || (isLoading && !(optionsOverride && optionsOverride.length > 0))}
     >
       <SelectTrigger className={cn("w-full", triggerClassName, className)}>
-        <SelectValue placeholder={isLoading && options.length === 0 ? "Carregando..." : placeholder}>
-          {selectedLabel}
-        </SelectValue>
+        <SelectValue placeholder={isLoading && options.length === 0 ? "Carregando..." : placeholder} />
       </SelectTrigger>
       <SelectContent>
         {isLoading && options.length === 0 ? (

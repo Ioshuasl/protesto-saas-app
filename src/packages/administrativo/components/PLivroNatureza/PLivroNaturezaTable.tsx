@@ -52,7 +52,11 @@ export function PLivroNaturezaTable({ data, onEdit, onDelete, isLoading }: PLivr
         </TableHeader>
         <TableBody>
           {data.map((livro) => (
-            <TableRow key={livro.livro_natureza_id}>
+            <TableRow
+              key={livro.livro_natureza_id}
+              className="cursor-pointer"
+              onClick={() => onEdit(livro)}
+            >
               <TableCell className="font-medium">{livro.livro_natureza_id}</TableCell>
               <TableCell>{livro.sigla}</TableCell>
               <TableCell>{livro.descricao}</TableCell>
@@ -67,7 +71,10 @@ export function PLivroNaturezaTable({ data, onEdit, onDelete, isLoading }: PLivr
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => onEdit(livro)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onEdit(livro);
+                    }}
                     title="Editar"
                     className="group"
                   >
@@ -76,7 +83,10 @@ export function PLivroNaturezaTable({ data, onEdit, onDelete, isLoading }: PLivr
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => onDelete(livro.livro_natureza_id)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onDelete(livro.livro_natureza_id);
+                    }}
                     title="Excluir"
                     className="group"
                   >

@@ -31,8 +31,11 @@ export interface TituloListItem extends PTituloInterface {
   partes_label?: string;
   partes_documentos?: string;
   vinculos_partes: Array<{
+    pessoa_vinculo_id?: number;
     tipo: string;
     descricao: string;
+    devedor_tipo_aceite?: string;
+    devedor_data_aceite?: Date;
     nome?: string;
     cpfcnpj?: string;
   }>;

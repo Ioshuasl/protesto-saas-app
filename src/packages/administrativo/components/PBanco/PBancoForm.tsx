@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PBancoInterface } from "@/packages/administrativo/interfaces";
-import { bancoFormSchema, type BancoFormValues } from "@/packages/administrativo/schemas/PBanco/PPBancoFormSchema";
+import { bancoFormSchema, type BancoFormValues } from "@/packages/administrativo/schemas/PBanco/PBancoFormSchema";
 import { Button } from "@/components/ui/button";
 import {
   Form,

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { BancoFormValues } from '@/packages/administrativo/schemas/PBanco/PPBancoFormSchema';
+import { BancoFormValues } from '@/packages/administrativo/schemas/PBanco/PBancoFormSchema';
 import { PBancoInterface } from '@/packages/administrativo/interfaces/PBanco/PBancoInterface';
 import { PBancoSaveCreateService } from '@/packages/administrativo/services/PBanco/PBancoSaveCreateService';
 import { PBancoSaveUpdateService } from '@/packages/administrativo/services/PBanco/PBancoSaveUpdateService';

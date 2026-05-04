@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PBancoDialog } from "@/packages/administrativo/components/PBanco/PBancoDialog";
 import { PBancoFilter } from "@/packages/administrativo/components/PBanco/PBancoFilter";
-import type { BancoFormValues } from "@/packages/administrativo/schemas/PBanco/PPBancoFormSchema";
+import type { BancoFormValues } from "@/packages/administrativo/schemas/PBanco/PBancoFormSchema";
 import { PBancoTable } from "@/packages/administrativo/components/PBanco/PBancoTable";
 import { usePBancoDeleteHook } from "@/packages/administrativo/hooks/PBanco/usePBancoDeleteHook";
 import { usePBancoReadHook } from "@/packages/administrativo/hooks/PBanco/usePBancoReadHook";

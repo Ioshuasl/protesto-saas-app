@@ -68,17 +68,21 @@ export function PArquivoTituloTable({
         </TableHeader>
         <TableBody>
           {data.map((arquivo) => (
-            <TableRow key={arquivo.arquivo_titulo_id}>
+            <TableRow
+              key={arquivo.arquivo_titulo_id}
+              className="cursor-pointer"
+              onClick={() => onGerarArquivoConfirmacao(arquivo)}
+            >
               <TableCell className="max-w-[280px] truncate font-medium">{arquivo.nome_arquivo ?? "-"}</TableCell>
               <TableCell className="whitespace-nowrap">{formatImportDate(arquivo.data_importacao)}</TableCell>
               <TableCell>{arquivo.quantidade ?? 0}</TableCell>
               <TableCell>
                 <div className="flex justify-end gap-2">
-                  <Button type="button" variant="outline" size="sm" onClick={() => onGerarArquivoConfirmacao(arquivo)}>
+                  <Button type="button" variant="outline" size="sm" onClick={(event) => { event.stopPropagation(); onGerarArquivoConfirmacao(arquivo); }}>
                     <FileCheck2 className="mr-1 h-4 w-4" />
                     Gerar Arquivo de Confirmação
                   </Button>
-                  <Button type="button" variant="ghost" size="sm" onClick={() => onEstornarRemessa(arquivo)}>
+                  <Button type="button" variant="ghost" size="sm" onClick={(event) => { event.stopPropagation(); onEstornarRemessa(arquivo); }}>
                     <RotateCcw className="mr-1 h-4 w-4" />
                     Estornar Remessa
                   </Button>

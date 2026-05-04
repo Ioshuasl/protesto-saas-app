@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PEspecieInterface } from "@/packages/administrativo/interfaces";
-import { especieFormSchema, type EspecieFormValues } from "@/packages/administrativo/schemas/PEspecie/PPEspecieFormSchema";
+import { especieFormSchema, type EspecieFormValues } from "@/packages/administrativo/schemas/PEspecie/PEspecieFormSchema";
 import { Button } from "@/components/ui/button";
 import {
   Form,

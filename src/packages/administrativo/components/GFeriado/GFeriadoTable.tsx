@@ -53,7 +53,11 @@ export function GFeriadoTable({ data, onEdit, onDelete, isLoading }: GFeriadoTab
         </TableHeader>
         <TableBody>
           {data.map((feriado) => (
-            <TableRow key={feriado.feriado_id}>
+            <TableRow
+              key={feriado.feriado_id}
+              className="cursor-pointer"
+              onClick={() => onEdit(feriado)}
+            >
               <TableCell className="font-medium">
                 {feriado.data ? format(new Date(feriado.data), "dd/MM/yyyy", { locale: ptBR }) : "-"}
               </TableCell>
@@ -69,7 +73,10 @@ export function GFeriadoTable({ data, onEdit, onDelete, isLoading }: GFeriadoTab
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => onEdit(feriado)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onEdit(feriado);
+                    }}
                     title="Editar"
                     className="group"
                   >
@@ -78,7 +85,10 @@ export function GFeriadoTable({ data, onEdit, onDelete, isLoading }: GFeriadoTab
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => onDelete(feriado.feriado_id)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onDelete(feriado.feriado_id);
+                    }}
                     title="Excluir"
                     className="group"
                   >

@@ -1,21 +1,35 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { PTituloAceiteEditalButton } from "@/packages/administrativo/components/PTitulo/actions/PTituloAceiteEditalButton";
+import { PTituloApontarButton } from "@/packages/administrativo/components/PTitulo/actions/PTituloApontarButton";
+import { PTituloCancelamentoButton } from "@/packages/administrativo/components/PTitulo/actions/PTituloCancelamentoButton";
+import { PTituloDesistenciaButton } from "@/packages/administrativo/components/PTitulo/actions/PTituloDesistenciaButton";
+import { PTituloIntimacaoButton } from "@/packages/administrativo/components/PTitulo/actions/PTituloIntimacaoButton";
+import { PTituloLiquidacaoButton } from "@/packages/administrativo/components/PTitulo/actions/PTituloLiquidacaoButton";
+import { PTituloProtestoButton } from "@/packages/administrativo/components/PTitulo/actions/PTituloProtestoButton";
+import { PTituloVoltarApontamentoButton } from "@/packages/administrativo/components/PTitulo/actions/PTituloVoltarApontamentoButton";
+import { PTituloVoltarIntimacaoButton } from "@/packages/administrativo/components/PTitulo/actions/PTituloVoltarIntimacaoButton";
+import { PTituloVoltarProtestoButton } from "@/packages/administrativo/components/PTitulo/actions/PTituloVoltarProtestoButton";
+import { PTituloCancelamentoOptionsDIalog } from "@/packages/administrativo/components/PTitulo/PTituloCancelamentoOptionsDIalog";
 import { usePBancoReadHook } from "@/packages/administrativo/hooks/PBanco/usePBancoReadHook";
 import { usePEspecieReadHook } from "@/packages/administrativo/hooks/PEspecie/usePEspecieReadHook";
 import { usePMotivosReadHook } from "@/packages/administrativo/hooks/PMotivos/usePMotivosReadHook";
 import { usePMotivosCancelamentoReadHook } from "@/packages/administrativo/hooks/PMotivosCancelamento/usePMotivosCancelamentoReadHook";
 import { usePOcorrenciasReadHook } from "@/packages/administrativo/hooks/POcorrencias/usePOcorrenciasReadHook";
 import { usePTituloShowHook } from "@/packages/administrativo/hooks/PTitulo/usePTituloShowHook";
-import { CheckCircle2, ChevronLeft } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { PTituloDetailsForm } from "./PTituloDetailsForm";
 import type {
   PTituloDetailsFormValues,
   PTituloSelectOptionsByField,
 } from "@/packages/administrativo/schemas/PTitulo/PTituloDetailsFormSchema";
+import {
+  getWorkflowActionButtons,
+  getPTituloCancelamentoOptions,
+  getWorkflowProgress,
+} from "@/packages/utils/PTitulo/ptituloWorkflowUtils";
+import { CheckCircle2, ChevronLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { PTituloDetailsForm } from "./PTituloDetailsForm";
 
 export function PTituloForm({ id }: { id?: string }) {
   const router = useRouter();
@@ -80,79 +94,39 @@ export function PTituloForm({ id }: { id?: string }) {
     [bancos, especies, motivos, motivosCancelamento, ocorrencias],
   );
 
-  const ocorrenciaBadgeLabel = useMemo(() => {
-    if (!titulo?.ocorrencia_id) return "Sem ocorrência";
-
-    const ocorrencia = ocorrencias.find((item) => item.ocorrencias_id === titulo.ocorrencia_id);
-    if (!ocorrencia) return "Sem ocorrência";
-
-    return ocorrencia.descricao || ocorrencia.tipo || ocorrencia.codigo || "Sem ocorrência";
-  }, [ocorrencias, titulo?.ocorrencia_id]);
-
   const workflowActionButtons = useMemo(() => {
-    const hasValue = (value: unknown) => value !== null && value !== undefined && value !== "";
-    const hasApontamentoBase = hasValue(titulo?.numero_apontamento) && hasValue(titulo?.data_apontamento);
-    const hasIntimacao = hasApontamentoBase && hasValue(titulo?.data_intimacao);
-    const hasProtestoCompleto =
-      hasIntimacao &&
-      hasValue(titulo?.data_protesto) &&
-      hasValue(titulo?.livro_id_protesto) &&
-      hasValue(titulo?.folha_protesto);
-
-    if (hasProtestoCompleto) {
-      return [
-        { label: "Voltar para Intimação", variant: "outline" as const },
-        { label: "Cancelar Título", variant: "destructive" as const },
-      ];
-    }
-
-    if (hasIntimacao) {
-      return [
-        { label: "Voltar para Apontamento", variant: "outline" as const },
-        { label: "Aceite/Edital", variant: "outline" as const },
-        { label: "Desistir/Liquidar Título", variant: "outline" as const },
-        { label: "Protestar Título", variant: "default" as const },
-      ];
-    }
-
-    if (hasApontamentoBase) {
-      return [{ label: "Intimar Título", variant: "default" as const }];
-    }
-
-    return [];
+    return getWorkflowActionButtons(titulo);
+  }, [titulo]);
+  const cancelamentoOptions = useMemo(() => {
+    return getPTituloCancelamentoOptions(titulo);
   }, [titulo]);
 
+  const numericTituloId = useMemo(() => {
+    if (typeof titulo?.titulo_id === "number" && !Number.isNaN(titulo.titulo_id)) {
+      return titulo.titulo_id;
+    }
+    if (id) {
+      const parsed = Number(id);
+      if (!Number.isNaN(parsed)) return parsed;
+    }
+    return null;
+  }, [id, titulo?.titulo_id]);
+
+  const handleActionSuccess = (nextTitulo: typeof titulo) => {
+    setTitulo(nextTitulo);
+
+    const nextId =
+      typeof nextTitulo?.titulo_id === "number" && !Number.isNaN(nextTitulo.titulo_id)
+        ? nextTitulo.titulo_id
+        : numericTituloId;
+
+    if (typeof nextId === "number" && nextId > 0) {
+      void fetchTituloByIdRef.current(nextId);
+    }
+  };
+
   const workflowProgress = useMemo(() => {
-    const hasValue = (value: unknown) => value !== null && value !== undefined && value !== "";
-
-    const hasApontamentoBase = hasValue(titulo?.numero_apontamento) && hasValue(titulo?.data_apontamento);
-    const hasIntimacao = hasApontamentoBase && hasValue(titulo?.data_intimacao);
-    const hasProtestoCompleto =
-      hasIntimacao &&
-      hasValue(titulo?.data_protesto) &&
-      hasValue(titulo?.livro_id_protesto) &&
-      hasValue(titulo?.folha_protesto);
-
-    const stage = hasProtestoCompleto ? 3 : hasIntimacao ? 2 : hasApontamentoBase ? 1 : 0;
-    const percent = stage === 0 ? 0 : stage === 1 ? 35 : stage === 2 ? 70 : 100;
-    const stageLabel =
-      stage === 3 ? "Protesto concluído" : stage === 2 ? "Intimação em andamento" : stage === 1 ? "Apontado" : "Sem andamento";
-
-    const steps = [
-      { label: "Apontamento", completed: stage >= 1 },
-      { label: "Intimação", completed: stage >= 2 },
-      { label: "Protesto", completed: stage >= 3 },
-    ];
-
-    return {
-      hasApontamentoBase,
-      hasIntimacao,
-      hasProtestoCompleto,
-      stage,
-      percent,
-      stageLabel,
-      steps,
-    };
+    return getWorkflowProgress(titulo);
   }, [titulo]);
 
   const handleSubmit = async (data: PTituloDetailsFormValues) => {
@@ -169,7 +143,7 @@ export function PTituloForm({ id }: { id?: string }) {
     <div className="flex w-full flex-col gap-6">
       <header className="rounded-xl border bg-card p-4 shadow-xs md:p-5">
         <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
             <div className="flex min-w-0 items-start gap-2">
               <button
                 type="button"
@@ -181,45 +155,58 @@ export function PTituloForm({ id }: { id?: string }) {
               </button>
 
               <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
+                <div className="flex min-w-0 flex-wrap items-center gap-2">
+                  <h1 className="min-w-0 text-xl font-bold tracking-tight sm:text-2xl xl:text-3xl">
                     {isNew ? "Cadastrar Título" : "Detalhes do Título"}
                   </h1>
-                  <Badge variant="outline" className="shrink-0 text-xs">
-                    Ocorrência: {ocorrenciaBadgeLabel}
-                  </Badge>
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <p className="mt-1 text-sm text-muted-foreground">
                   Gerencie os dados e o fluxo operacional do título nesta tela.
                 </p>
               </div>
             </div>
 
-            <div className="flex w-full flex-col gap-2 lg:w-auto lg:shrink-0 lg:items-end">
+            <div className="flex w-full flex-col gap-2 xl:w-auto xl:shrink-0 xl:items-end">
               {workflowActionButtons.length > 0 ? (
-                <div className="rounded-lg bg-muted/30 p-2">
-                  <div className="flex flex-wrap items-center gap-2 lg:justify-end">
+                <div className="rounded-lg bg-muted/30 p-2 xl:max-w-[52rem]">
+                  <div className="flex flex-wrap items-center gap-1.5 xl:justify-end [&>div>button]:h-8 [&>div>button]:px-2.5 [&>div>button]:text-xs xl:[&>div>button]:h-9 xl:[&>div>button]:px-3 xl:[&>div>button]:text-sm">
                     {workflowActionButtons.map((buttonConfig) => (
-                      <Button
-                        key={buttonConfig.label}
-                        variant={buttonConfig.variant}
-                        type="button"
-                        className={
-                          [
-                            "h-9 rounded-md border px-3 text-sm font-medium shadow-none md:h-10 md:px-4",
-                            "transition-transform duration-200 hover:-translate-y-0.5 hover:scale-[1.01]",
-                            buttonConfig.variant === "default" && "bg-[#FF6B00] text-white hover:bg-[#E56000]",
-                            buttonConfig.variant !== "default" && "bg-muted hover:bg-muted/80",
-                          ]
-                            .filter(Boolean)
-                            .join(" ")
-                        }
-                        onClick={() => {
-                          console.info(`Ação "${buttonConfig.label}" ainda não implementada`);
-                        }}
-                      >
-                        {buttonConfig.label}
-                      </Button>
+                      <div key={buttonConfig.key}>
+                        {numericTituloId == null ? null : buttonConfig.key === "voltarProtesto" ? (
+                          <PTituloVoltarProtestoButton id={numericTituloId} onSuccess={handleActionSuccess} />
+                        ) : buttonConfig.key === "apontarTitulo" ? (
+                          <PTituloApontarButton
+                            id={numericTituloId}
+                            numeroApontamento={titulo?.numero_apontamento ?? null}
+                            onSuccess={handleActionSuccess}
+                          />
+                        ) : buttonConfig.key === "voltarIntimacao" ? (
+                          <PTituloVoltarIntimacaoButton id={numericTituloId} onSuccess={handleActionSuccess} />
+                        ) : buttonConfig.key === "cancelarTitulo" ? (
+                          cancelamentoOptions.length > 0 ? (
+                            <PTituloCancelamentoOptionsDIalog
+                              id={numericTituloId}
+                              titulo={titulo}
+                              options={cancelamentoOptions}
+                              onSuccess={handleActionSuccess}
+                            />
+                          ) : (
+                            <PTituloCancelamentoButton id={numericTituloId} onSuccess={handleActionSuccess} />
+                          )
+                        ) : buttonConfig.key === "voltarApontamento" ? (
+                          <PTituloVoltarApontamentoButton id={numericTituloId} onSuccess={handleActionSuccess} />
+                        ) : buttonConfig.key === "aceiteEdital" ? (
+                          <PTituloAceiteEditalButton id={numericTituloId} onSuccess={handleActionSuccess} />
+                        ) : buttonConfig.key === "desistirTitulo" ? (
+                          <PTituloDesistenciaButton id={numericTituloId} onSuccess={handleActionSuccess} />
+                        ) : buttonConfig.key === "liquidarTitulo" ? (
+                          <PTituloLiquidacaoButton id={numericTituloId} onSuccess={handleActionSuccess} />
+                        ) : buttonConfig.key === "protestarTitulo" ? (
+                          <PTituloProtestoButton id={numericTituloId} onSuccess={handleActionSuccess} />
+                        ) : buttonConfig.key === "intimarTitulo" ? (
+                          <PTituloIntimacaoButton id={numericTituloId} onSuccess={handleActionSuccess} />
+                        ) : null}
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -234,7 +221,10 @@ export function PTituloForm({ id }: { id?: string }) {
                 style={{ width: `${workflowProgress.percent}%` }}
               />
             </div>
-            <div className="mt-2 grid grid-cols-3 gap-2">
+            <div
+              className="mt-2 grid gap-2"
+              style={{ gridTemplateColumns: `repeat(${Math.max(workflowProgress.steps.length, 1)}, minmax(0, 1fr))` }}
+            >
               {workflowProgress.steps.map((step) => (
                 <div
                   key={step.label}

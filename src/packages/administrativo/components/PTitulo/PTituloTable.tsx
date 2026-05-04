@@ -99,7 +99,11 @@ export function PTituloTable({ data, isLoading, onViewDetails, onUpdateStatus }:
                 hasValue(titulo.folha_protesto));
 
             return (
-              <TableRow key={titulo.titulo_id}>
+              <TableRow
+                key={titulo.titulo_id}
+                className="cursor-pointer"
+                onClick={() => onViewDetails(titulo)}
+              >
                 <TableCell className="font-medium">{titulo.titulo_id}</TableCell>
                 <TableCell>
                   <div className="flex max-w-[140px] flex-col">
@@ -127,48 +131,53 @@ export function PTituloTable({ data, isLoading, onViewDetails, onUpdateStatus }:
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="text-foreground hover:text-[#FF6B00]">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-foreground hover:text-[#FF6B00]"
+                        onClick={(event) => event.stopPropagation()}
+                      >
                         <Cog className="h-4 w-4" strokeWidth={1.5} />
                         <span className="sr-only">Ações</span>
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => onViewDetails(titulo)}>
+                      <DropdownMenuItem onClick={(event) => { event.stopPropagation(); onViewDetails(titulo); }}>
                         <Eye className="mr-2 h-4 w-4" strokeWidth={1.5} />
                         Ver Detalhes
                       </DropdownMenuItem>
                       {hasProtestoCompleto ? (
                         <>
-                          <DropdownMenuItem onClick={() => console.info('Ação "Voltar para Intimação" ainda não implementada')}>
+                          <DropdownMenuItem onClick={(event) => { event.stopPropagation(); console.info('Ação "Voltar para Intimação" ainda não implementada'); }}>
                             <EllipsisVertical className="mr-2 h-4 w-4" strokeWidth={1.5} />
                             Voltar para Intimação
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => console.info('Ação "Cancelar Título" ainda não implementada')}>
+                          <DropdownMenuItem onClick={(event) => { event.stopPropagation(); console.info('Ação "Cancelar Título" ainda não implementada'); }}>
                             <EllipsisVertical className="mr-2 h-4 w-4" strokeWidth={1.5} />
                             Cancelar Título
                           </DropdownMenuItem>
                         </>
                       ) : hasIntimacao ? (
                         <>
-                          <DropdownMenuItem onClick={() => console.info('Ação "Voltar para Apontamento" ainda não implementada')}>
+                          <DropdownMenuItem onClick={(event) => { event.stopPropagation(); console.info('Ação "Voltar para Apontamento" ainda não implementada'); }}>
                             <EllipsisVertical className="mr-2 h-4 w-4" strokeWidth={1.5} />
                             Voltar para Apontamento
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => console.info('Ação "Aceite/Edital" ainda não implementada')}>
+                          <DropdownMenuItem onClick={(event) => { event.stopPropagation(); console.info('Ação "Aceite/Edital" ainda não implementada'); }}>
                             <EllipsisVertical className="mr-2 h-4 w-4" strokeWidth={1.5} />
                             Aceite/Edital
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => onUpdateStatus(titulo.titulo_id, "Pago")}>
+                          <DropdownMenuItem onClick={(event) => { event.stopPropagation(); onUpdateStatus(titulo.titulo_id, "Pago"); }}>
                             <EllipsisVertical className="mr-2 h-4 w-4" strokeWidth={1.5} />
                             Desistir/Liquidar Título
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => onUpdateStatus(titulo.titulo_id, "Protestado")}>
+                          <DropdownMenuItem onClick={(event) => { event.stopPropagation(); onUpdateStatus(titulo.titulo_id, "Protestado"); }}>
                             <EllipsisVertical className="mr-2 h-4 w-4" strokeWidth={1.5} />
                             Protestar Título
                           </DropdownMenuItem>
                         </>
                       ) : hasApontamentoBase ? (
-                        <DropdownMenuItem onClick={() => onUpdateStatus(titulo.titulo_id, "Em Tríduo")}>
+                        <DropdownMenuItem onClick={(event) => { event.stopPropagation(); onUpdateStatus(titulo.titulo_id, "Em Tríduo"); }}>
                           <EllipsisVertical className="mr-2 h-4 w-4" strokeWidth={1.5} />
                           Intimar Título
                         </DropdownMenuItem>

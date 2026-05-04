@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useMemo, type ReactNode } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -11,11 +10,12 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 import { useGUsuarioReadHook } from "@/packages/administrativo/hooks/GUsuario/useGUsuarioReadHook";
 import { usePTituloSelosReadHook } from "@/packages/administrativo/hooks/PTitulo/usePTituloSelosReadHook";
 import type { PTituloSeloVinculadoItem } from "@/packages/administrativo/interfaces/PTitulo/PTituloSeloVinculadoItem";
-import { cn } from "@/lib/utils";
-import { AlertTriangle, Check, ArrowRight } from "lucide-react";
+import { AlertTriangle, Check } from "lucide-react";
+import { useEffect, useMemo, type ReactNode } from "react";
 
 const moneyFormatter = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -28,8 +28,10 @@ const dateTimeFormatter = new Intl.DateTimeFormat("pt-BR", {
 });
 
 const labelClass = "text-muted-foreground text-[10px] font-medium uppercase tracking-wide";
-const triggerInfoCardClass =
-  "bg-background/70 ring-border/50 min-h-14 rounded-lg px-2.5 py-2 ring-1 backdrop-blur-[1px] sm:px-3";
+
+/** Rótulos compactos na linha única do trigger (listagens tipo dashboard, ex.: Mosaic/Cruip). */
+const triggerMicroLabel =
+  "text-muted-foreground shrink-0 text-[10px] font-medium uppercase tracking-wider";
 
 function pickString(...candidates: unknown[]): string {
   const c = candidates.find((v) => v != null && String(v).trim() !== "");
@@ -170,7 +172,6 @@ export function PTituloSelosSection({ tituloId, selos }: PTituloSelosSectionProp
   }, [usuarios]);
 
   const rows = useMemo(() => selosFromHook ?? [], [selosFromHook]);
-  const itemIds = rows.map((_, i) => `selo-${i}`);
   const normalizedList = useMemo(() => rows.map((s) => normalizeRow(s)), [rows]);
   const agrupadorDivergencia = useMemo(
     () => getAgrupadorDivergencia(rows, normalizedList),
@@ -197,8 +198,8 @@ export function PTituloSelosSection({ tituloId, selos }: PTituloSelosSectionProp
   return (
     <div className="space-y-3">
       <p className="text-muted-foreground text-xs leading-relaxed">
-        Cada linha exibe sigla, tipo, descrição, data e total na horizontal; em telas pequenas use a rolagem lateral.
-        Expanda a linha para o restante dos campos.
+        Cada selo aparece em uma linha compacta (sigla, ato, data e total). Clique para ver agrupador, serventuário e
+        valores detalhados.
       </p>
 
       {agrupadorDivergencia.haInconsistencia && agrupadorDivergencia.referencia ? (
@@ -229,11 +230,7 @@ export function PTituloSelosSection({ tituloId, selos }: PTituloSelosSectionProp
         </div>
       ) : null}
 
-      <Accordion
-        type="multiple"
-        defaultValue={rows.length <= 8 ? itemIds : [itemIds[0] ?? "selo-0"]}
-        className="flex flex-col gap-3"
-      >
+      <Accordion type="multiple" defaultValue={[]} className="flex flex-col gap-3">
         {rows.map((selo, index) => {
           const n = normalizedList[index]!;
           const uid = selo.usuario_id;
@@ -247,6 +244,18 @@ export function PTituloSelosSection({ tituloId, selos }: PTituloSelosSectionProp
 
           const itemId = `selo-${index}`;
           const descricaoResumo = n.descricao || n.descricaoCompleta || `Tipo de ato ${n.tipoAto || "—"}`;
+          const dataFmt = formatDateTime(n.dataRaw as string | Date | undefined);
+          const totalFmt = moneyFormatter.format(n.total ?? 0);
+          const triggerSummary = [
+            foraAgrupador ? "Agrupador divergente" : null,
+            `Sel.: ${n.sigla || "—"}`,
+            n.tipoAto ? `Tipo ${n.tipoAto}` : null,
+            descricaoResumo,
+            `Data: ${dataFmt}`,
+            `Total: ${totalFmt}`,
+          ]
+            .filter(Boolean)
+            .join(" · ");
 
           return (
             <AccordionItem
@@ -262,90 +271,89 @@ export function PTituloSelosSection({ tituloId, selos }: PTituloSelosSectionProp
             >
               <AccordionTrigger
                 className={cn(
-                  "group focus-visible:ring-ring/50 !items-stretch py-0 hover:no-underline focus-visible:ring-2 [&>svg]:mt-0 [&>svg]:self-center [&>svg]:transition-transform",
-                  "px-0 [&[data-state=open]]:border-b",
+                  "group w-full max-w-full hover:bg-muted/40 focus-visible:ring-ring/50 !items-center gap-2 px-3 py-2 text-xs hover:no-underline focus-visible:ring-2 sm:gap-3 sm:px-4 sm:py-2.5 sm:text-sm",
+                  "[&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:translate-y-0 [&>svg]:transition-transform",
+                  "[&[data-state=open]]:border-border/60 [&[data-state=open]]:border-b [&[data-state=open]]:bg-muted/20",
                   foraAgrupador
-                    ? "border-amber-500/20 bg-amber-500/10 hover:bg-amber-500/15 data-[state=open]:bg-amber-500/15"
-                    : "hover:bg-muted/40 data-[state=open]:bg-muted/20",
+                    ? "bg-amber-500/[0.06] hover:bg-amber-500/12 data-[state=open]:bg-amber-500/10"
+                    : "",
                 )}
               >
-                <div className="flex w-full min-w-0 flex-col text-left">
+                <div
+                  className="flex w-full min-w-0 max-w-full flex-1 flex-nowrap items-center gap-x-2 overflow-hidden text-left sm:gap-x-3"
+                  title={triggerSummary}
+                >
                   {foraAgrupador ? (
-                    <div
-                      className="text-amber-900 dark:text-amber-100 flex w-full min-w-0 items-center gap-1.5 border-b border-amber-500/40 bg-amber-500/20 px-3 py-1.5 text-[10px] font-medium sm:gap-2 sm:px-4 sm:py-2 sm:text-xs"
-                      data-slot="selo-agrupador-aviso-trigger"
-                    >
-                      <AlertTriangle className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" strokeWidth={1.75} />
-                      <span className="line-clamp-2 sm:line-clamp-1">
-                        Selo fora do agrupador{agrupadorDivergencia.referencia ? " esperado" : ""}
-                        {agrupadorDivergencia.referencia ? (
-                          <>
-                            : <span className="font-mono">{agrupadorDivergencia.referencia}</span>
-                          </>
-                        ) : null}
-                      </span>
-                    </div>
-                  ) : null}
-                  <div
-                    className={cn(
-                      "grid w-full min-w-0 grid-cols-1 gap-2 px-3 py-2.5 sm:grid-cols-2 sm:gap-2.5 sm:px-4 sm:py-3",
-                      "lg:grid-cols-[minmax(10.5rem,12rem)_minmax(0,1fr)_minmax(11rem,12.5rem)_minmax(7rem,8rem)]",
-                      foraAgrupador ? "border-amber-500/5" : "border-border/40",
-                    )}
-                  >
-                    <div className={cn(triggerInfoCardClass, "flex flex-col justify-center")}>
-                      <span className={labelClass}>Selo</span>
-                      <p className="text-foreground line-clamp-1 font-mono text-xs font-bold" title={n.sigla || undefined}>
-                        {n.sigla || "—"}
-                      </p>
-                    </div>
-
-                    <div className={cn(triggerInfoCardClass, "min-w-0 flex-col justify-center")}>
-                      <div className="mb-0.5 flex items-center justify-between gap-2">
-                        <span className={labelClass}>Ato / descrição</span>
-                        {n.tipoAto ? (
-                          <Badge variant="secondary" className="h-5 shrink-0 font-mono text-[10px] sm:text-xs">
-                            Tipo {n.tipoAto}
-                          </Badge>
-                        ) : null}
-                      </div>
-                      <p
-                        className="text-foreground min-w-0 line-clamp-1 text-sm font-medium"
-                        title={n.tipoAto ? `${n.tipoAto} -> ${descricaoResumo}` : descricaoResumo}
+                    <>
+                      <span
+                        className="inline-flex shrink-0 items-center gap-1 rounded-sm border border-amber-500/45 bg-amber-500/15 px-1 py-0.5 text-[10px] font-medium text-amber-950 dark:text-amber-50"
+                        data-slot="selo-agrupador-aviso-trigger"
+                        title={
+                          agrupadorDivergencia.referencia
+                            ? `Fora do agrupador esperado: ${agrupadorDivergencia.referencia}`
+                            : "Fora do padrão de agrupador"
+                        }
                       >
-                        <span className="inline-flex min-w-0 items-center gap-1.5">
-                          {n.tipoAto ? (
-                            <>
-                              <span className="text-foreground shrink-0 font-mono text-xs font-bold tracking-tight">
-                                {n.tipoAto}
-                              </span>
-                              <span className="text-muted-foreground/90 inline-flex shrink-0" aria-hidden>
-                                <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.9} />
-                              </span>
-                            </>
-                          ) : null}
-                          <span className="min-w-0 truncate">{descricaoResumo}</span>
+                        <AlertTriangle className="size-3 shrink-0 text-amber-700 dark:text-amber-400" strokeWidth={2} />
+                        <span className="max-w-[5rem] truncate sm:max-w-[9rem]">
+                          {agrupadorDivergencia.referencia ? (
+                            <span className="font-mono">{agrupadorDivergencia.referencia}</span>
+                          ) : (
+                            "Aviso"
+                          )}
                         </span>
-                      </p>
-                    </div>
-
-                    <div className={cn(triggerInfoCardClass, "flex flex-col justify-center text-left")}>
-                      <span className={labelClass}>Data / hora</span>
-                      <time
-                        className="text-foreground whitespace-nowrap text-sm font-medium tabular-nums"
-                        dateTime={String(n.dataRaw ?? "")}
-                      >
-                        {formatDateTime(n.dataRaw as string | Date | undefined)}
-                      </time>
-                    </div>
-
-                    <div className={cn(triggerInfoCardClass, "flex flex-col justify-center text-right")}>
-                      <span className={labelClass}>Total</span>
-                      <span className="text-foreground text-base font-semibold tabular-nums sm:text-lg">
-                        {moneyFormatter.format(n.total ?? 0)}
                       </span>
-                    </div>
-                  </div>
+                      <span className="bg-border/80 h-3.5 w-px shrink-0" aria-hidden />
+                    </>
+                  ) : null}
+
+                  <span className="flex shrink-0 items-center gap-1.5">
+                    <span className={triggerMicroLabel}>Sel.</span>
+                    <span className="font-mono text-xs font-semibold whitespace-nowrap text-foreground tabular-nums sm:text-sm">
+                      {n.sigla || "—"}
+                    </span>
+                  </span>
+
+                  <span className="bg-border/80 h-3.5 w-px shrink-0" aria-hidden />
+
+                  <span className="flex min-w-0 basis-[9rem] flex-1 items-center gap-1.5 overflow-hidden sm:basis-[12rem] md:basis-[16rem] lg:basis-[20rem]">
+                    <span className={triggerMicroLabel}>Ato</span>
+                    {n.tipoAto ? (
+                      <Badge
+                        variant="secondary"
+                        className="h-5 shrink-0 px-1.5 py-0 font-mono text-[10px] leading-none sm:text-[11px]"
+                      >
+                        {n.tipoAto}
+                      </Badge>
+                    ) : null}
+                    <span
+                      className="text-foreground min-w-0 flex-1 truncate text-xs font-medium sm:text-sm"
+                      title={descricaoResumo}
+                    >
+                      {descricaoResumo}
+                    </span>
+                  </span>
+
+                  <span className="bg-border/80 h-3.5 w-px shrink-0" aria-hidden />
+
+                  <span className="flex shrink-0 items-center gap-1.5">
+                    <span className={triggerMicroLabel}>Data</span>
+                    <time
+                      className="whitespace-nowrap text-xs tabular-nums text-foreground sm:text-sm"
+                      dateTime={String(n.dataRaw ?? "")}
+                    >
+                      {dataFmt}
+                    </time>
+                  </span>
+
+                  <span className="bg-border/80 h-3.5 w-px shrink-0" aria-hidden />
+
+                  <span className="flex shrink-0 items-center gap-1.5">
+                    <span className={triggerMicroLabel}>Tot.</span>
+                    <span className="text-xs font-semibold whitespace-nowrap tabular-nums text-foreground sm:text-sm">
+                      {totalFmt}
+                    </span>
+                  </span>
                 </div>
               </AccordionTrigger>
 

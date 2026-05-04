@@ -50,7 +50,11 @@ export function POcorrenciasTable({ data, onEdit, onDelete, isLoading }: POcorre
         </TableHeader>
         <TableBody>
           {data.map((ocorrencia) => (
-            <TableRow key={ocorrencia.ocorrencias_id}>
+            <TableRow
+              key={ocorrencia.ocorrencias_id}
+              className="cursor-pointer"
+              onClick={() => onEdit(ocorrencia)}
+            >
               <TableCell className="font-medium">{ocorrencia.ocorrencias_id}</TableCell>
               <TableCell>{ocorrencia.codigo}</TableCell>
               <TableCell>{ocorrencia.tipo}</TableCell>
@@ -60,7 +64,10 @@ export function POcorrenciasTable({ data, onEdit, onDelete, isLoading }: POcorre
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => onEdit(ocorrencia)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onEdit(ocorrencia);
+                    }}
                     title="Editar"
                     className="group"
                   >
@@ -69,7 +76,10 @@ export function POcorrenciasTable({ data, onEdit, onDelete, isLoading }: POcorre
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => onDelete(ocorrencia.ocorrencias_id)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onDelete(ocorrencia.ocorrencias_id);
+                    }}
                     title="Excluir"
                     className="group"
                   >

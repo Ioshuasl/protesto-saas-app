@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PLivroNaturezaDialog } from "@/packages/administrativo/components/PLivroNatureza/PLivroNaturezaDialog";
 import { PLivroNaturezaFilter } from "@/packages/administrativo/components/PLivroNatureza/PLivroNaturezaFilter";
-import type { LivroNaturezaFormValues } from "@/packages/administrativo/schemas/PLivroNatureza/PPLivroNaturezaFormSchema";
+import type { LivroNaturezaFormValues } from "@/packages/administrativo/schemas/PLivroNatureza/PLivroNaturezaFormSchema";
 import { PLivroNaturezaTable } from "@/packages/administrativo/components/PLivroNatureza/PLivroNaturezaTable";
 import { usePLivroNaturezaDeleteHook } from "@/packages/administrativo/hooks/PLivroNatureza/usePLivroNaturezaDeleteHook";
 import { usePLivroNaturezaReadHook } from "@/packages/administrativo/hooks/PLivroNatureza/usePLivroNaturezaReadHook";

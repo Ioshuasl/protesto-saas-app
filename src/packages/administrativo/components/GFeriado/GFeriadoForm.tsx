@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { GFeriadoInterface } from "@/packages/administrativo/interfaces";
-import { feriadoFormSchema, type FeriadoFormValues } from "@/packages/administrativo/schemas/GFeriado/GGFeriadoFormSchema";
+import { feriadoFormSchema, type FeriadoFormValues } from "@/packages/administrativo/schemas/GFeriado/GFeriadoFormSchema";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -78,24 +78,22 @@ export function GFeriadoForm({ defaultValues, onSubmit, isLoading }: GFeriadoFor
               <FormLabel>Data</FormLabel>
               <Popover>
                 <FormControl>
-                  <PopoverTrigger
-                    render={
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full pl-3 text-left font-normal",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? (
-                          format(field.value, "PPP", { locale: ptBR })
-                        ) : (
-                          <span>Selecione uma data</span>
-                        )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    }
-                  />
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full pl-3 text-left font-normal",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value ? (
+                        format(field.value, "PPP", { locale: ptBR })
+                      ) : (
+                        <span>Selecione uma data</span>
+                      )}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
                 </FormControl>
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar

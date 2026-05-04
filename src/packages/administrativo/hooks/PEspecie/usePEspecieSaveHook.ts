@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { EspecieFormValues } from '@/packages/administrativo/schemas/PEspecie/PPEspecieFormSchema';
+import { EspecieFormValues } from '@/packages/administrativo/schemas/PEspecie/PEspecieFormSchema';
 import { PEspecieInterface } from '@/packages/administrativo/interfaces/PEspecie/PEspecieInterface';
 import { PEspecieSaveCreateService } from '@/packages/administrativo/services/PEspecie/PEspecieSaveCreateService';
 import { PEspecieSaveUpdateService } from '@/packages/administrativo/services/PEspecie/PEspecieSaveUpdateService';

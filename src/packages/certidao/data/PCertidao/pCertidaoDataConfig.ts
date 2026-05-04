@@ -3,6 +3,7 @@ export const PCERTIDAO_FAKE_ENDPOINTS = {
   show: (id: number) => `certidao/p_certidao/${id}/`,
   create: "certidao/p_certidao/",
   update: (id: number) => `certidao/p_certidao/${id}/`,
+  consultaApresentante: "certidao/p_certidao/consulta_apresentante/",
 };
 
 export function usePCertidaoMockData() {

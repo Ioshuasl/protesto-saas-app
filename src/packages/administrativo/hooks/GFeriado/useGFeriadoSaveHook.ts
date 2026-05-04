@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import type { GFeriadoInterface } from '@/packages/administrativo/interfaces/GFeriado/GFeriadoInterface';
-import { FeriadoFormValues } from '@/packages/administrativo/schemas/GFeriado/GGFeriadoFormSchema';
+import { FeriadoFormValues } from '@/packages/administrativo/schemas/GFeriado/GFeriadoFormSchema';
 import { GFeriadoSaveCreateService } from '@/packages/administrativo/services/GFeriado/GFeriadoSaveCreateService';
 import { GFeriadoSaveUpdateService } from '@/packages/administrativo/services/GFeriado/GFeriadoSaveUpdateService';
 import { useResponse } from '@/shared/components/response/ResponseContext';

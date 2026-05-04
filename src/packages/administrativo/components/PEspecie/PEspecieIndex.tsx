@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PEspecieDialog } from "@/packages/administrativo/components/PEspecie/PEspecieDialog";
 import { PEspecieFilter } from "@/packages/administrativo/components/PEspecie/PEspecieFilter";
-import type { EspecieFormValues } from "@/packages/administrativo/schemas/PEspecie/PPEspecieFormSchema";
+import type { EspecieFormValues } from "@/packages/administrativo/schemas/PEspecie/PEspecieFormSchema";
 import { PEspecieTable } from "@/packages/administrativo/components/PEspecie/PEspecieTable";
 import { usePEspecieDeleteHook } from "@/packages/administrativo/hooks/PEspecie/usePEspecieDeleteHook";
 import { usePEspecieReadHook } from "@/packages/administrativo/hooks/PEspecie/usePEspecieReadHook";

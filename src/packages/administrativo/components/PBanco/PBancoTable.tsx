@@ -49,7 +49,11 @@ export function PBancoTable({ data, onEdit, onDelete, isLoading }: PBancoTablePr
         </TableHeader>
         <TableBody>
           {data.map((banco) => (
-            <TableRow key={banco.banco_id}>
+            <TableRow
+              key={banco.banco_id}
+              className="cursor-pointer"
+              onClick={() => onEdit(banco)}
+            >
               <TableCell className="font-medium">{banco.banco_id}</TableCell>
               <TableCell>{banco.codigo_banco}</TableCell>
               <TableCell>{banco.descricao}</TableCell>
@@ -58,7 +62,10 @@ export function PBancoTable({ data, onEdit, onDelete, isLoading }: PBancoTablePr
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => onEdit(banco)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onEdit(banco);
+                    }}
                     title="Editar"
                     className="group"
                   >
@@ -67,7 +74,10 @@ export function PBancoTable({ data, onEdit, onDelete, isLoading }: PBancoTablePr
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => onDelete(banco.banco_id)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onDelete(banco.banco_id);
+                    }}
                     title="Excluir"
                     className="group"
                   >
