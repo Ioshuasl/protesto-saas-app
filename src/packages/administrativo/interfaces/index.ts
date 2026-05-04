@@ -20,6 +20,7 @@ export * from "./PTitulo/PTituloInterface";
 export * from "./PTitulo/PTituloListItem";
 export * from "./PTitulo/PTituloApontarInterface";
 export * from "./PTitulo/PTituloIntimacaoInterface";
+export * from "./PTitulo/PTituloProtestoInterface";
 export * from "./PTitulo/PTituloVoltarApontamentoInterface";
 export * from "./PTitulo/PTituloVoltarIntimacaoInterface";
 export * from "./PTitulo/PTituloShowDevedoresItem";
