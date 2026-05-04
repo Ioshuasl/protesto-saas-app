@@ -10,6 +10,7 @@ const sustacaoShape: PTituloSustacaoFieldMap = {
   ocorrencia_id: z.coerce.number().int().positive("Selecione a ocorrência"),
   motivo_cancelamento_id: z.coerce.number().int().positive("Selecione o motivo de cancelamento"),
   data_sustacao: zPTituloWorkflowLocalIsoDate("Selecione a data de sustação"),
+  servico_gratuito: z.enum(["S", "N"]),
 };
 
 export const pTituloSustacaoFormSchema = z.object(sustacaoShape);

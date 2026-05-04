@@ -40,6 +40,7 @@ export async function PTituloSustacaoData(id: number, payload: PTituloSustacaoFo
     data_sustado: payloadDate ?? prev.data_sustado,
     ocorrencia_id: payload.ocorrencia_id,
     motivo_cancelamento: payload.motivo_cancelamento_id,
+    servico_gratuito: payload.servico_gratuito,
     situacao_aceite: 'Sustado',
   };
 

@@ -6,8 +6,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { PBancoForm, BancoFormValues } from "./PBancoForm";
 import { PBancoInterface } from "@/packages/administrativo/interfaces";
+import { BancoFormValues, PBancoForm } from "./PBancoForm";
 
 interface PBancoDialogProps {
   open: boolean;
@@ -28,7 +28,7 @@ export function PBancoDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-4xl">
         <DialogHeader>
           <DialogTitle>
             {isEditing ? "Editar Banco" : "Novo Banco"}

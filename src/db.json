@@ -554,6 +554,7 @@
     { "banco_id": 4, "codigo_banco": "341", "descricao": "Itaú Unibanco" },
     { "banco_id": 5, "codigo_banco": "033", "descricao": "Santander" }
   ],
+  "layouts": [{ "layout_id": 1, "descricao": "FEBRABAN 4.3" }],
   "certidoes": [
     {
       "certidao_id": 1,

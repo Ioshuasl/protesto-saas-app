@@ -38,6 +38,7 @@ export async function PTituloRetiradaData(id: number, payload: PTituloRetiradaFo
     ...prev,
     ocorrencia_id: payload.ocorrencia_id,
     motivo_cancelamento: payload.motivo_cancelamento_id,
+    servico_gratuito: payload.servico_gratuito,
     situacao_aceite: 'Retirado',
   };
 

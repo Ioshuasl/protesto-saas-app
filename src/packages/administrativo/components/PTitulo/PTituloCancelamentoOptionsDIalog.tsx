@@ -29,6 +29,7 @@ import type { PTituloRetiradaFormValues } from "@/packages/administrativo/schema
 import type { PTituloSustacaoFormValues } from "@/packages/administrativo/schemas/PTitulo/PTituloSustacaoFormSchema";
 import type { WorkflowActionButton, WorkflowActionKey } from "@/packages/utils/PTitulo/ptituloWorkflowUtils";
 import InfoDialog from "@/shared/components/InfoDialog/InfoDialog";
+import { cn } from "@/lib/utils";
 import { CheckCircle2, ChevronLeft, Circle, CircleHelp } from "lucide-react";
 
 const PTITULO_CANCELAMENTO_OPCOES_INFO_MARKDOWN = `### 1. Liquidação (Pagamento)
@@ -257,7 +258,7 @@ export function PTituloCancelamentoOptionsDIalog({
       </Button>
 
       <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-        <DialogContent className="flex max-h-[min(90vh,840px)] flex-col gap-0 overflow-hidden sm:max-w-xl">
+        <DialogContent className="flex max-h-[min(90vh,840px)] w-[calc(100vw-2rem)] flex-col gap-0 overflow-hidden sm:max-w-3xl">
           <DialogHeader className="shrink-0 space-y-1 pr-8">
             <div className="flex items-center gap-1.5">
               <DialogTitle className="text-left">
@@ -284,11 +285,17 @@ export function PTituloCancelamentoOptionsDIalog({
             </DialogDescription>
           </DialogHeader>
 
-          <div className="min-h-0 flex-1 overflow-y-auto py-4">
+          <div
+            className={cn(
+              "min-h-0 flex-1 overflow-x-hidden overflow-y-auto py-4",
+              step === "escolher" &&
+                "[scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden",
+            )}
+          >
             {step === "escolher" ? (
-              <div className="grid gap-2">
+              <div className="grid max-w-full gap-2">
                 <span className="text-sm font-medium">Ação (escolha única)</span>
-                <ItemGroup className="gap-2">
+                <ItemGroup className="max-w-full gap-2">
                   {options.map((option) => {
                     const isSelected = selectedAction === option.key;
                     return (
@@ -298,7 +305,7 @@ export function PTituloCancelamentoOptionsDIalog({
                         tabIndex={0}
                         variant={isSelected ? "outline" : "muted"}
                         size="sm"
-                        className="cursor-pointer select-none transform-gpu transition-all duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.01] hover:shadow-sm data-[variant=outline]:border-emerald-500/60 data-[variant=outline]:bg-emerald-50/40 dark:data-[variant=outline]:bg-emerald-900/10"
+                        className="max-w-full cursor-pointer select-none transform-gpu transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-sm data-[variant=outline]:border-emerald-500/60 data-[variant=outline]:bg-emerald-50/40 dark:data-[variant=outline]:bg-emerald-900/10"
                         onClick={() => setSelectedAction(option.key)}
                         onKeyDown={(event) => {
                           if (event.key === "Enter" || event.key === " ") {

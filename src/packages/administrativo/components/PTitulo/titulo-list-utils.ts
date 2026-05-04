@@ -25,6 +25,13 @@ export function toInputDate(value: Date | string | undefined): string {
   return `${year}-${month}-${day}`;
 }
 
+/** Valor inicial `S`/`N` para Serviço gratuito (mesma convenção de `PTituloFeesSection`). */
+export function tituloServicoGratuitoSn(titulo?: { servico_gratuito?: string | null }): "S" | "N" {
+  const v = titulo?.servico_gratuito;
+  if (v === "S" || v === "true" || v === "1") return "S";
+  return "N";
+}
+
 export function getTriduoMessage(titulo: TituloListItem): string | null {
   if (!titulo.data_intimacao) return null;
   const status = (titulo.status_descricao ?? titulo.situacao_aceite ?? "").toLowerCase();

@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon } from "lucide-react";
-import { type ReactNode, useEffect, useMemo } from "react";
+import { type ReactNode, useEffect, useId, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -16,9 +16,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Toggle } from "@/components/ui/toggle";
 import { PMotivosCancelamentoSelectObject } from "@/packages/administrativo/components/PMotivosCancelamento/PMotivosCancelamentoSelectObject";
 import { POcorrenciasSelectObject } from "@/packages/administrativo/components/POcorrencias/POcorrenciasSelectObject";
-import { moneyFormatter } from "@/packages/administrativo/components/PTitulo/titulo-list-utils";
+import { moneyFormatter, tituloServicoGratuitoSn } from "@/packages/administrativo/components/PTitulo/titulo-list-utils";
 import type { PTituloInterface } from "@/packages/administrativo/interfaces/PTitulo/PTituloInterface";
 import type { TituloListItem } from "@/packages/administrativo/interfaces/PTitulo/PTituloListItem";
 import {
@@ -69,6 +70,7 @@ export function PTituloSustacaoForm({
       motivo_cancelamento_id:
         defaultValues?.motivo_cancelamento_id ?? titulo?.motivo_cancelamento ?? 0,
       data_sustacao: dataSustacao,
+      servico_gratuito: defaultValues?.servico_gratuito ?? tituloServicoGratuitoSn(titulo),
     };
   }, [defaultValues, titulo]);
 
@@ -89,6 +91,8 @@ export function PTituloSustacaoForm({
   const valorTaxaCancelamentoDisplay = moneyFormatter.format(titulo?.valor_taxa_cancel ?? 0);
   const valorTaxaAverbDisplay = moneyFormatter.format(titulo?.valor_taxa_averb ?? 0);
 
+  const servicoGratuitoToggleId = useId();
+
   return (
     <Form {...form}>
       <form
@@ -102,7 +106,7 @@ export function PTituloSustacaoForm({
               }
         }
       >
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:items-start sm:gap-4">
           <FormField
             control={form.control}
             name="data_sustacao"
@@ -145,6 +149,28 @@ export function PTituloSustacaoForm({
               );
             }}
           />
+          <FormField
+            control={form.control}
+            name="motivo_cancelamento_id"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Motivo de cancelamento</FormLabel>
+                <FormControl>
+                  <PMotivosCancelamentoSelectObject
+                    value={Number(field.value ?? 0) > 0 ? String(field.value) : ""}
+                    onValueChange={(value) => {
+                      field.onChange(Number(value));
+                    }}
+                    triggerClassName={cn(
+                      Number(field.value ?? 0) <= 0 && "border-amber-500/40 focus-visible:ring-amber-500/40",
+                    )}
+                    placeholder="Selecione o motivo de cancelamento"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
 
         <FormField
@@ -172,22 +198,29 @@ export function PTituloSustacaoForm({
 
         <FormField
           control={form.control}
-          name="motivo_cancelamento_id"
+          name="servico_gratuito"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Motivo de cancelamento</FormLabel>
-              <FormControl>
-                <PMotivosCancelamentoSelectObject
-                  value={Number(field.value ?? 0) > 0 ? String(field.value) : ""}
-                  onValueChange={(value) => {
-                    field.onChange(Number(value));
-                  }}
-                  triggerClassName={cn(
-                    Number(field.value ?? 0) <= 0 && "border-amber-500/40 focus-visible:ring-amber-500/40",
-                  )}
-                  placeholder="Selecione o motivo de cancelamento"
-                />
-              </FormControl>
+            <FormItem className="flex flex-col gap-2 space-y-0">
+              <div className="flex min-h-10 flex-col gap-2 rounded-md border border-input bg-transparent px-3 py-2 shadow-xs sm:min-h-[2.25rem] sm:flex-row sm:items-center sm:justify-between">
+                <FormLabel
+                  htmlFor={servicoGratuitoToggleId}
+                  className="!mt-0 flex-1 cursor-pointer text-sm font-normal leading-none"
+                >
+                  Serviço gratuito
+                </FormLabel>
+                <FormControl>
+                  <Toggle
+                    id={servicoGratuitoToggleId}
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    aria-label="Serviço gratuito"
+                    pressed={field.value === "S"}
+                    onPressedChange={(pressed) => field.onChange(pressed ? "S" : "N")}
+                    className="shrink-0 self-end sm:self-auto"
+                  />
+                </FormControl>
+              </div>
               <FormMessage />
             </FormItem>
           )}

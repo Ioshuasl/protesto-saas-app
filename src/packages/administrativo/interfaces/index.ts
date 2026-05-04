@@ -7,6 +7,7 @@ export * from "./PPessoaVinculo/PPessoaVinculoInterface";
 export * from "./PPessoa/PPessoaInterface";
 export * from "./PLivroNatureza/PLivroNaturezaInterface";
 export * from "./PLivroAndamento/PLivroAndamentoInterface";
+export * from "./PLayout/PLayoutInterface";
 export * from "./PCustasCancelamento/PCustasCancelamentoInterface";
 export * from "./GEmolumentoItem/GEmolumentoItemInterface";
 export * from "./GEmolumento/GEmolumentoInterface";

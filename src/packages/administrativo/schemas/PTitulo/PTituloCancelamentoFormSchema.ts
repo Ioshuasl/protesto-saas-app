@@ -10,6 +10,7 @@ const cancelamentoShape: PTituloCancelamentoFieldMap = {
   ocorrencia_id: z.coerce.number().int().positive("Selecione a ocorrência"),
   motivo_cancelamento_id: z.coerce.number().int().positive("Selecione o motivo de cancelamento"),
   data_cancelamento: zPTituloWorkflowLocalIsoDate("Selecione a data de cancelamento"),
+  servico_gratuito: z.enum(["S", "N"]),
 };
 
 export const pTituloCancelamentoFormSchema = z.object(cancelamentoShape);

@@ -10,6 +10,7 @@ const liquidacaoShape: PTituloLiquidacaoFieldMap = {
   ocorrencia_id: z.coerce.number().int().positive("Selecione a ocorrência"),
   motivo_cancelamento_id: z.coerce.number().int().positive("Selecione o motivo de cancelamento"),
   data_liquidacao: zPTituloWorkflowLocalIsoDate("Selecione a data de liquidação"),
+  servico_gratuito: z.enum(["S", "N"]),
 };
 
 export const pTituloLiquidacaoFormSchema = z.object(liquidacaoShape);
